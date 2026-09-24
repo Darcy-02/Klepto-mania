@@ -11,4 +11,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/walking.unity
     guid: 9fa0d6671d3c5d84c85faeb43ef3972f
+  - enabled: 1
+    path: Assets/Scenes/GameArea1.unity
+    guid: c6c4fcda66d3c5e43ae316a9040fb6d9
   m_configObjects: {}

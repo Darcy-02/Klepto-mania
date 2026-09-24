@@ -12,6 +12,6 @@ public class Buttons : MonoBehaviour
     // Next button starts the game
     public void StartGame()
     {
-        SceneManager.LoadScene("Game");
+        SceneManager.LoadScene("GameArea1");
     }
 }
