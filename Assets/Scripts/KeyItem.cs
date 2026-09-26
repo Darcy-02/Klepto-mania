@@ -1,49 +1,27 @@
 using UnityEngine;
 
-public class KeyItem : MonoBehaviour
+public class KeyItem : Interactable
 {
     public bool isCorrectKey = false;
-    bool playerNear = false;
 
-    public void Interact()
+    public override void Interact()
     {
         if (isCorrectKey)
         {
             Debug.Log("Correct Key!");
-            // lock all others
-            foreach (var k in Object.FindObjectsByType<KeyItem>())
+            foreach (var k in Object.FindObjectsByType<KeyItem>(FindObjectsSortMode.None))
             {
                 k.enabled = false;
                 var col = k.GetComponent<Collider2D>();
                 if (col) col.enabled = false;
             }
-            GameManager.I.CompleteTask(3);
+            GameManager.Instance.CompleteTask("Keys");
             gameObject.SetActive(false);
         }
         else
         {
             Debug.Log("Wrong Key");
-            GameManager.I.WrongKey();
+            GameManager.Instance.WrongKey();
         }
     }
-
-    void Update()
-    {
-        if (playerNear && Input.GetKeyDown(KeyCode.E))
-        {
-            Interact();
-        }
-    }
-
-    void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.CompareTag("Player")) playerNear = true;
-    }
-    void OnTriggerExit2D(Collider2D other)
-    {
-        if (other.CompareTag("Player")) playerNear = false;
-    }
-
-    // also keep mouse for testing
-    void OnMouseDown() { Interact(); }
 }

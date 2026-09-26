@@ -13,7 +13,7 @@ public class CandlePuzzle : MonoBehaviour
         if (!done && litCount >= totalToLight)
         {
             done = true;
-            PuzzleManager.Instance.CompleteTask("Candles");
+            GameManager.Instance.CompleteTask("Candles");
         }
     }
 }

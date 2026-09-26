@@ -8,6 +8,7 @@ public class DoorFinal : MonoBehaviour
     public TMP_InputField input;
 
     bool nearDoor = false;
+    bool solved = false;
 
     void Update()
     {
@@ -27,13 +28,22 @@ public class DoorFinal : MonoBehaviour
     {
         if (input.text == "11122111")
         {
-            Debug.Log("WIN!");
-            Time.timeScale = 1f;
-            puzzlePanel.SetActive(false);
-            // win here
+            bool accepted = GameManager.Instance.CompleteTask("Code");
+            if (accepted)
+            {
+                solved = true;
+                Time.timeScale = 1f;
+                puzzlePanel.SetActive(false);
+            }
+            else
+            {
+                Debug.Log("Correct code, but solve the earlier puzzles first.");
+                input.text = "";
+            }
         }
         else
         {
+            GameManager.Instance.WrongKey();
             input.text = "";
         }
     }

@@ -1,74 +1,99 @@
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
+using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager I;
-    public static GameManager Instance { get { return I; } } // fix your Instance error
+    public static GameManager Instance;
 
-    public Slider progressBar;
-    public TMP_Text progressText;
-    public GameObject doorClosed, doorOpen;
-    public GameObject losePanel, winPanel;
+    [Header("Puzzle Order")]
+    // The exact order tasks must be completed in.
+    // Must match the string each puzzle script passes into CompleteTask().
+    public List<string> taskOrder = new List<string> { "Candles", "Keys", "ducks", "Sound", "Code" };
+    List<string> doneTasks = new List<string>();
 
-    int collected = 0;
+    [Header("UI")]
+    public TextMeshProUGUI progressText;   // "Puzzle Progress: x / 5"
+    public Slider progressBar;             // optional, leave empty if unused
+
+    [Header("Door")]
+    public LockDoor door;                  // your existing single-door script
+
+    [Header("Win / Lose")]
+    public GameObject winPanel;
+    public GameObject losePanel;
+
     int trials = 0;
+    const int maxTrials = 3;
 
-    void Awake() { I = this; }
+    void Awake()
+    {
+        if (Instance != null && Instance != this) { Destroy(gameObject); return; }
+        Instance = this;
+    }
 
     void Start()
     {
-        if(progressBar) { progressBar.maxValue = 5; progressBar.value = 0; }
+        doneTasks.Clear();
+        if (progressBar != null) progressBar.maxValue = taskOrder.Count;
         UpdateUI();
-        if(doorClosed) doorClosed.SetActive(true);
-        if(doorOpen) doorOpen.SetActive(false);
+    }
+
+    public bool CompleteTask(string taskName)
+    {
+        if (doneTasks.Contains(taskName)) return true;
+
+        string expected = taskOrder[doneTasks.Count];
+        if (taskName != expected)
+        {
+            Debug.LogWarning($"'{taskName}' triggered out of order - expected '{expected}' next. Ignored.");
+            return false;
+        }
+
+        doneTasks.Add(taskName);
+        UpdateUI();
+        ResetTrials();
+
+        if (doneTasks.Count >= taskOrder.Count)
+        {
+            if (door != null) door.UnlockDoor();
+            Win();
+        }
+        return true;
     }
 
     void UpdateUI()
     {
-        if(progressBar) progressBar.value = collected;
-        if(progressText) progressText.text = $"{collected}/5";
+        if (progressText != null)
+            progressText.text = $"Puzzle Progress: {doneTasks.Count} / {taskOrder.Count}";
+        if (progressBar != null)
+            progressBar.value = doneTasks.Count;
     }
 
-    // NEW SYSTEM
-    public void CompleteTask(int taskNum)
+    public void Win()
     {
-        collected = Mathf.Max(collected, taskNum);
-        UpdateUI();
-        ResetTrials();
-
-        if(collected == 4)
-        {
-            if(doorClosed) doorClosed.SetActive(false);
-            if(doorOpen) doorOpen.SetActive(true);
-        }
-        if(collected >= 5)
-        {
-            doorClosed.SetActive(false);
-            doorOpen.SetActive(false);
-            Win();
-        }
-        else
-        {
-            if(PlayerSteps.I != null) PlayerSteps.I.ShowStep(collected + 1);
-        }
+        Time.timeScale = 0f;
+        if (winPanel != null) winPanel.SetActive(true);
     }
 
-    public void Win() { Time.timeScale = 0f; if(winPanel) winPanel.SetActive(true); }
-    public void Lose() { Time.timeScale = 0f; if(losePanel) losePanel.SetActive(true); }
+    public void Lose(string reason = "")
+    {
+        Time.timeScale = 0f;
+        if (losePanel != null) losePanel.SetActive(true);
+        Debug.Log("LOST: " + reason);
+    }
 
-    // --- FIX FOR YOUR OLD SCRIPTS (so errors disappear) ---
     public void ResetTrials() { trials = 0; }
 
-    public void WrongDuck() { WrongGeneric(); }
-    public void WrongKey() { WrongGeneric(); }
-    public void WrongSound() { WrongGeneric(); }
+    public void WrongDuck() { WrongGeneric("Wrong duck"); }
+    public void WrongKey() { WrongGeneric("Wrong key"); }
+    public void WrongSound() { WrongGeneric("Wrong song"); }
 
-    void WrongGeneric()
+    void WrongGeneric(string reason)
     {
         trials++;
-        Debug.Log("Wrong! " + trials + "/3");
-        if(trials >= 3) Lose();
+        Debug.Log($"{reason}! {trials}/{maxTrials}");
+        if (trials >= maxTrials) Lose(reason + " x3");
     }
 }

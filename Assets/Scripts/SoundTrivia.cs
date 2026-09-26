@@ -17,14 +17,19 @@ public class SoundTrivia : Interactable
     {
         if (pickedName == correctAnswer)
         {
-            done = true;
-            GameManager.Instance.ResetTrials();
-            PuzzleManager.Instance.CompleteTask(puzzleID);
-            Debug.Log("CORRECT!");
+            bool accepted = GameManager.Instance.CompleteTask(puzzleID);
+            if (accepted)
+            {
+                done = true;
+                Debug.Log("CORRECT!");
+            }
+            else
+            {
+                Debug.Log("Correct, but solve the earlier puzzle first.");
+            }
         }
         else
         {
-            Debug.Log($"WRONG! Picked {pickedName}");
             GameManager.Instance.WrongSound();
         }
     }
