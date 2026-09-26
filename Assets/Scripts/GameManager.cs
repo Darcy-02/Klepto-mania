@@ -2,6 +2,8 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
@@ -13,16 +15,31 @@ public class GameManager : MonoBehaviour
     public List<string> taskOrder = new List<string> { "Candles", "Keys", "ducks", "Sound", "Code" };
     List<string> doneTasks = new List<string>();
 
+    [Header("UI - Step Instructions")]
+    public TextMeshProUGUI stepText;
+    public List<string> stepMessages = new List<string>
+{
+    "Step 1: Light all the candles (press E)",
+    "Step 2: Pick the key that has purple (press E)",
+    "Step 3: Pick the blue duck (press B)",
+    "Step 4: Which song is this? (press E)",
+    "Step 5: Enter the code on the door (press Space)"
+};
+
+    [Header("UI - Lose")]
+    public GameObject losePanel;
+    public TextMeshProUGUI loseMessageText;
+
     [Header("UI")]
-    public TextMeshProUGUI progressText;   // "Puzzle Progress: x / 5"
-    public Slider progressBar;             // optional, leave empty if unused
+    public TextMeshProUGUI progressText;   
+    public Slider progressBar;             
 
     [Header("Door")]
-    public LockDoor door;                  // your existing single-door script
+    public LockDoor door;                  
 
-    [Header("Win / Lose")]
+    [Header("Win")]
     public GameObject winPanel;
-    public GameObject losePanel;
+    
 
     int trials = 0;
     const int maxTrials = 3;
@@ -69,6 +86,13 @@ public class GameManager : MonoBehaviour
             progressText.text = $"Puzzle Progress: {doneTasks.Count} / {taskOrder.Count}";
         if (progressBar != null)
             progressBar.value = doneTasks.Count;
+        if (stepText != null)
+        {
+            if (doneTasks.Count < stepMessages.Count)
+                stepText.text = stepMessages[doneTasks.Count];
+            else
+                stepText.text = "All steps complete!";
+        }
     }
 
     public void Win()
@@ -77,11 +101,20 @@ public class GameManager : MonoBehaviour
         if (winPanel != null) winPanel.SetActive(true);
     }
 
-    public void Lose(string reason = "")
+    public void Lose(string reason)
     {
         Time.timeScale = 0f;
         if (losePanel != null) losePanel.SetActive(true);
+        if (loseMessageText != null) loseMessageText.text = "YOU LOST\n" + reason;
         Debug.Log("LOST: " + reason);
+        StartCoroutine(RestartAfter(2.5f));
+    }
+
+    IEnumerator RestartAfter(float sec)
+    {
+        yield return new WaitForSecondsRealtime(sec); 
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     public void ResetTrials() { trials = 0; }
@@ -94,6 +127,6 @@ public class GameManager : MonoBehaviour
     {
         trials++;
         Debug.Log($"{reason}! {trials}/{maxTrials}");
-        if (trials >= maxTrials) Lose(reason + " x3");
+        if (trials >= maxTrials) Lose(reason + "");
     }
 }
