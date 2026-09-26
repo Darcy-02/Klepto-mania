@@ -10,16 +10,16 @@ public class LockDoor : MonoBehaviour
     {
         col = GetComponent<BoxCollider2D>();
         sr = GetComponent<SpriteRenderer>();
-        if (sr != null) sr.color = Color.red; // Locked = red
+        if (sr != null) sr.color = Color.red; 
     }
 
     public void UnlockDoor()
     {
         isLocked = false;
-        if (sr != null) sr.color = Color.green; // Unlocked = green
-        if (col != null) col.enabled = false; // Player can now walk through
+        if (sr != null) sr.color = Color.green; 
+        if (col != null) col.enabled = false; 
         Debug.Log("DOOR UNLOCKED! You can escape!");
-        // Add sound / animation here
+        
     }
 
     void OnTriggerEnter2D(Collider2D other)
@@ -27,7 +27,7 @@ public class LockDoor : MonoBehaviour
         if (!isLocked && other.CompareTag("Player"))
         {
             Debug.Log("WIN! Player Escaped!");
-            // You can load win screen here later
+            
         }
     }
 }

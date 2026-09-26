@@ -18,7 +18,7 @@ public class PlayerMove : MonoBehaviour
     {
         float move = 0f;
 
-        // A = Left, D = Right (also arrow keys work)
+        
         if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
         {
             move = -1f;
@@ -36,10 +36,10 @@ public class PlayerMove : MonoBehaviour
             animator.SetBool("isWalking", false);
         }
 
-        // Move
+      
         rb.linearVelocity = new Vector2(move * speed, rb.linearVelocity.y);
 
-        // W = Jump (or Up Arrow)
+      
         if ((Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)) && isGrounded)
         {
             rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
@@ -48,7 +48,7 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
-    // Check if touching ground
+   
     void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Ground"))

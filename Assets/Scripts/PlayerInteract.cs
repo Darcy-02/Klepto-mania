@@ -2,18 +2,18 @@ using UnityEngine;
 
 public class PlayerInteract : MonoBehaviour
 {
-    Interactable nearby; // for candles, keys, doors
-    Duck nearbyDuck;     // ONLY for ducks
+    Interactable nearby; 
+    Duck nearbyDuck;     
 
     void Update()
     {
-        // E = normal objects
+        
         if (nearby != null && Input.GetKeyDown(KeyCode.E))
         {
             nearby.Interact();
         }
 
-        // B = ducks only
+
         if (nearbyDuck != null && Input.GetKeyDown(KeyCode.B))
         {
             nearbyDuck.Interact();
@@ -22,7 +22,7 @@ public class PlayerInteract : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D col)
     {
-        // Check duck first
+
         var d = col.GetComponent<Duck>();
         if (d != null)
         {
@@ -31,7 +31,7 @@ public class PlayerInteract : MonoBehaviour
             return;
         }
 
-        // Then normal
+     
         var i = col.GetComponent<Interactable>();
         if (i != null)
         {

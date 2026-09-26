@@ -36,8 +36,8 @@ public class BachiraMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-        // This respects colliders!
+
         rb.linearVelocity = movement * speed;
-        // If your Unity is older, use: rb.velocity = movement * speed;
+
     }
 }

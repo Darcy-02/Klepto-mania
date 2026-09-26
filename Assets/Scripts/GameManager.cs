@@ -10,8 +10,7 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance;
 
     [Header("Puzzle Order")]
-    // The exact order tasks must be completed in.
-    // Must match the string each puzzle script passes into CompleteTask().
+
     public List<string> taskOrder = new List<string> { "Candles", "Keys", "ducks", "Sound", "Code" };
     List<string> doneTasks = new List<string>();
 
